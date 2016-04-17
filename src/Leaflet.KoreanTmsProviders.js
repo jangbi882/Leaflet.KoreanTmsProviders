@@ -24,6 +24,18 @@
   			}
    		);
 
+	L.Proj.CRS.TMS.NgiiMap = new L.Proj.CRS.TMS(
+			'EPSG:5179',
+			'+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
+  			//[90112, 1192896, 1990673, 2761664],
+  			//[-200000.0, -28024123.62 , 31824123.62, 4000000.0],
+  			[-200000.0, -28024123.6 , 31824123.6, 4000000.0],
+  			{
+  			    // Level: 6 ~ 19
+  				resolutions: [0,1,2,3,4,5, 1954.597389, 977.2986945, 488.6493473, 244.3246736, 122.1623368, 61.08116841, 30.5405842, 15.2702921, 7.635146051, 3.817573025, 1.908786513, 0.954393256, 0.477196628, 0.238598314]
+  			}
+   		);
+
 
 	L.Proj.TileLayer.TMS.Provider = L.Proj.TileLayer.TMS.extend({
 		initialize: function (arg, crs, options) {
@@ -41,6 +53,24 @@
 				crs: providers[providerName].crs,
 				options: providers[providerName].options
 			};
+
+			// Just for NGII Map
+			if (providerName == "NgiiMap") {
+			    this.getTileUrl = function(tilePoint) {
+                    var zoom = this._map.getZoom(),
+                        gridHeight = Math.ceil(
+                        (this.crs.projectedBounds[3] - this.crs.projectedBounds[1]) /
+                        this._projectedTileSize(zoom));
+                    var z = this._getZoomForUrl();
+
+                    return L.Util.template(this._url, L.Util.extend({
+                        s: this._getSubdomain(tilePoint),
+                        z: z>9 ? z : "0"+z,  // padding 0
+                        x: tilePoint.x,
+                        y: gridHeight - tilePoint.y - 1
+                    }, this.options));
+                }
+			}
 
 			// overwrite values in provider from variant.
 			if (variantName && 'variants' in providers[providerName]) {
@@ -87,7 +117,7 @@
 	L.Proj.TileLayer.TMS.Provider.providers = {
 
 		NaverMap: {
-			url: 'http://onetile{s}.map.naver.net/get/29/0/0/{z}/{x}/{y}/bl_vc_bg/ol_vc_an',
+			url: 'http://onetile{s}.map.naver.net/get/29/0/0/{z0}/{x}/{y}/bl_vc_bg/ol_vc_an',
 			crs: L.Proj.CRS.TMS.Naver, 
 			options: {
 				maxZoom: 13, 
@@ -134,6 +164,35 @@
 				},
 				Hybrid: {
 					url:  'http://xdworld.vworld.kr:8080/2d/Hybrid/201310/{z}/{x}/{y}.png'
+				}
+
+			}
+		},
+		NgiiMap: {
+            //url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.62:8081/korean_map_tile/L{z}/{x}/{y}.png',
+			url: 'http://localhost/base_map_tile/L{z}/{x}/{y}.png',
+			crs: L.Proj.CRS.TMS.NgiiMap,
+			options: {
+				maxZoom: 19,
+				minZoom: 6,
+				zoomOffset: 0,
+				subdomains: '1234',
+				continuousWorld: true,
+				attribution: '<a href="#" style="color: blue; font-family: Shanti, NanumGothic, \'Nanum Gothic\', Arial, sans-serif; text-decoration: none; font-weight: bold;"> 바로e맵 ⓒ2015</a>'
+			},
+			variants: {
+				Normal: {},
+				LowColor: {
+					url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.63:8081/color_map_tile/L{z}/{x}/{y}.png'
+				},
+				White: {
+					url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.61:80/white_map_tile/L{z}/{x}/{y}.png'
+				},
+				LowView: {
+					url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.63:8081/lowV_map_tile/L{z}/{x}/{y}.png'
+				},
+				English: {
+					url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.62:8081/english_map_tile/L{z}/{x}/{y}.png'
 				}
 
 			}
