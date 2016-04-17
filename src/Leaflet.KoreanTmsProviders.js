@@ -117,7 +117,7 @@
 	L.Proj.TileLayer.TMS.Provider.providers = {
 
 		NaverMap: {
-			url: 'http://onetile{s}.map.naver.net/get/29/0/0/{z0}/{x}/{y}/bl_vc_bg/ol_vc_an',
+			url: 'http://onetile{s}.map.naver.net/get/29/0/0/{z}/{x}/{y}/bl_vc_bg/ol_vc_an',
 			crs: L.Proj.CRS.TMS.Naver, 
 			options: {
 				maxZoom: 13, 
@@ -169,8 +169,8 @@
 			}
 		},
 		NgiiMap: {
-            //url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.62:8081/korean_map_tile/L{z}/{x}/{y}.png',
-			url: 'http://localhost/base_map_tile/L{z}/{x}/{y}.png',
+            url: 'http://emap.ngii.go.kr/proxy/proxyTile.jsp?URL=http://210.117.198.62:8081/korean_map_tile/L{z}/{x}/{y}.png',
+			//url: 'http://localhost/base_map_tile/L{z}/{x}/{y}.png',
 			crs: L.Proj.CRS.TMS.NgiiMap,
 			options: {
 				maxZoom: 19,
